@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<title>
+		Marionette.js large applications twitter sample
+	</title>
+	<meta name="description" content="Preview all of Adobe's Edge Fonts in a much easier and more pleasing way."/>
+	<!-- <meta name="viewport" content="width=device-width"/> -->
+	<link rel="stylesheet" href="css/bootstrap.css" />
+	<link rel="stylesheet" href="css/bootstrap-responsive.css" />
+	<link rel="stylesheet" href="css/style.css" />
+	<script src="js/vendor/modernizr/modernizr.js"></script>
+</head>
+<body>
+
+	<!--[if lt IE 7]>
+		<p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+	<![endif]-->
+	<div class="navbar navbar-inverse">
+	  <div class="navbar-inner">
+	    <div class="container">
+	      <!-- Be sure to leave the brand out there if you want it shown -->
+	      <a class="brand" href="#">
+	      		Twitter Search with Marionette.js
+	      	</a>
+	    </div>
+	  </div>
+	</div>
+	<div class="container-fluid twitter-search-box">
+		<header></header>
+		<div class="row-fluid" id="wrap">
+			<div class="span2 search">
+				<div id="search" class="search-wrapper"></div>
+				<div id="stored" class="stored"></div>
+			</div>
+			 <div class="span4 items bk-white">
+				<article id="tweets"></article>
+			</div>
+			 <div class="span6 bk-white detail">
+				<article id="tweets_detail"></article>
+			</div>
+		</div>
+		<footer class="footer">
+			@jotadeveloper
+		</footer>
+	</div>
+
+	<script id="search-aside-content" type="text/x-handlebars-template">
+        <div class="ui-search-type-filters"></div>
+ 	</script>
+
+	<script id="search_twitter-template" type="text/x-handlebars-template">
+        <div>
+        	<input type="text" placeholder="Search on twitter" value=""/>
+        	<button class="btn btn-primary">
+        		Search
+        	</button>
+        </div>
+
+ 	</script>
+
+ 	<script id="tweet-item-view" type="text/x-handlebars-template">
+        	<div class="item-parent">
+	        	<div class="media">
+	              <div class="pull-left">
+	            		<img  class="media-object" src="{{profile_image_url}}" title="{{from_user}}"/>
+	              </div>
+	              <div class="media-body">
+	                	{{text}}
+	              </div>
+	            </div>
+           	</div>
+ 	</script>
+
+ 	<script id="tweet-edit-view" type="text/x-handlebars-template">
+        	<div class="page-header">
+  				<h1>
+  					{{text}}
+  				</h1>
+			</div>
+			<span>
+				{{created_at}}
+			</span>
+			<hr/>
+			<h4>Tweeted by <a href="https://twitter.com/{{from_user}}/" target="_blank">{{from_user}}</a> </h4>
+ 	</script>
+
+	<script id="node-template" type="text/template">
+	    <li>test</li>
+	</script>
+
+
+ 	<script id="show-no-items-message-template" type="text/x-handlebars-template">
+        	<div class="no-items">
+        		<h4>
+	        		<div class="alert alert-block">
+	        			Search something in the box
+	        		</div>
+        		</h4>
+        	</div>
+ 	</script>
+
+
+	<!-- build:js scripts/amd-app.js -->
+	<script data-main="js/main" src="js/vendor/requirejs/require.js"></script>
+	<!-- endbuild -->
+
+</body>
+</html>

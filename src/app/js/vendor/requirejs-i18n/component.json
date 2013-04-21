@@ -1,0 +1,8 @@
+{
+  "name": "requirejs-i18n",
+  "version": "2.0.2",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/requirejs/i18n"
+  }
+}
