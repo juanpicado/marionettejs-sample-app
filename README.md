@@ -1,6 +1,6 @@
 # Marionette.js Boilerplate
 
-<img src="http://marionettejs.com/images/logo-a4052db8.png" alt="Drawing" style="width: 100px;"/>
+![Alt text](http://jster.net/uploads/repository/MarionetteJS-1351535894.png "MarioneteJS")
 
 ## Getting Started
 
@@ -21,15 +21,15 @@ This is a boilerplate to create large application based on marionette.js archite
 Download node packages required for the application
 
 	npm install
-	
+
 Update **bower** dependencies
 
 	bower update
-	
+
 
 ### Development
 
-	grunt 
+	grunt
 
 ### Production Build
 
