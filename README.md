@@ -5,12 +5,12 @@
 ## Getting Started
 
 A Twitter search app based on:
-	* RequireJS
-	* Backbone.js
-	* Marionette.js
-	* Handlebars
-	* jQuery
-	* Grunt.js
+ * RequireJS
+ * Backbone.js
+ * Marionette.js
+ * Handlebars
+ * jQuery
+ * Grunt.js
 
 ### Requirements
 
