@@ -1,10 +1,16 @@
-# Marionette.js Boilerplate
+# Marionette.js Sample App
 
 ![Alt text](http://jster.net/uploads/repository/MarionetteJS-1351535894.png "MarioneteJS")
 
 ## Getting Started
 
-This is a boilerplate to create large application based on marionette.js architecture.
+A Twitter search app based on:
+	* RequireJS
+	* Backbone.js
+	* Marionette.js
+	* Handlebars
+	* jQuery
+	* Grunt.js
 
 ### Requirements
 
