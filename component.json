@@ -13,7 +13,8 @@
     "backbone.marionette.handlebars": "~0.2.0",
     "requirejs-domready": "~2.0.1",
     "requirejs-i18n": "~2.0.2",
-    "requirejs-text": "~2.0.5"
+    "requirejs-text": "~2.0.5",
+    "almond": "~0.2.5"
   },
   "devDependencies": {}
 }

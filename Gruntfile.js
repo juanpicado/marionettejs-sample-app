@@ -1,4 +1,14 @@
+/*global require:false, module:false*/
+
 'use strict';
+
+var path = require('path');
+
+var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
+
+var folderMount = function folderMount(connect, point) {
+  return connect['static'](path.resolve(point));
+};
 
 module.exports = function(grunt) {
 
@@ -6,6 +16,14 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: '<json:package.json>',
+
+    dirs: {
+      root: 'src/app',
+      staging: 'temp/staging',
+      dist: 'dist',
+      sass : 'src/sass',
+      test: 'src/test'
+    },
 
     banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -16,129 +34,314 @@ module.exports = function(grunt) {
     // Task configuration
 
     // clean the distribution folder.
+
     clean: {
-      src: ['dist']
+      dist: ['<%= dirs.staging %>','<%= dirs.dist %>']
     },
 
-    // concat plugin configuration
-    concat: {
+    // server
 
-      options: {
-        banner: '<%= banner %>',
-        stripBanners: true
-      },
-
-      dist: {
-        src: ['src/<%= pkg.name %>.js'],
-        dest: 'dist/ba-<%= pkg.name %>.js'
-      }
-    },
-
-    // require-js-configuration
-    requirejs: {
-      compile: {
-        // !! You can drop your app.build.js config wholesale into 'options'
+    server: {
+      dev: {
         options: {
-          appDir: "src/app/js",
-          baseUrl: ".",
-          dir: "target/",
-          optimize: 'none',
-          mainConfigFile:'./src/app/js/main.js',
-          // modules:[
-          //   {
-          //     name:'modules/model/moduleA'
-          //   }
-          // ],
-          logLevel: 0,
-          findNestedDependencies: true,
-          fileExclusionRegExp: /^\./,
-          inlineText: true
+          port: 3001,
+          base: '<%= dirs.root %>',
+          keepalive: false,
+          middleware: function(connect, options) {
+            return [
+              lrSnippet,
+              folderMount(connect, options.base)
+            ];
+          }
+        }
+      },
+      pro: {
+        options: {
+          port: 3002,
+          base: '<%= dirs.dist %>/public',
+          keepalive: true
         }
       }
     },
 
-    uglify: {
+    // prepare files to be minimized,
+    //read the embebed configuration for each html in the projject
 
+    'useminPrepare': {
       options: {
-        banner: '<%= banner %>'
+        dest: '<%= dirs.staging %>/step2'
+      },
+      html: '<%= dirs.staging %>/step1/*.html'
+    },
+
+    // files minimize process
+
+    usemin: {
+      options: {
+        basedir: '<%= dirs.staging %>/step2'
       },
 
-      dist: {
-        src: '<%= concat.dist.dest %>',
-        dest: 'dist/ba-<%= pkg.name %>.min.js'
+      html: {
+        expand: true,
+        cwd: '<%= dirs.staging %>/step2',
+        src:['**/*.{html,css}']
       }
     },
 
-    qunit: {
-      files: ['test/**/*.html']
-    },
+   // copy task, define the build workflow
 
-    jshint: {
+    copy: {
 
-      gruntfile: {
-        options: {
-          jshintrc: '.jshintrc'
+        'dist-step-1': {
+          expand: true,
+          cwd: '<%= dirs.root %>',
+          src: ['**','!css/style.css'],
+          dest: '<%= dirs.staging %>/step1/'
         },
-        src: 'Gruntfile.js'
+
+        'dist-step-2': {
+          expand: true,
+          cwd: '<%= dirs.staging %>/step1',
+          src: [
+            "*",
+            "**/*.js",
+            "!js/modules",
+            'js/vendor/modernizr/modernizr.js',
+            "js/vendor/requirejs/require.js",
+            "!js/modules/**/*.js",
+            "ico/**"
+          ],
+          dest:  "<%= dirs.staging %>/step2/"
+        },
+
+        'dist-step-3': {
+          expand: true,
+          cwd: '<%= dirs.staging %>/step2',
+          src: [
+            "**/*.html",
+            "**",
+            "js/*.js",
+            "!js/*main.js",
+            '!**/vendor/**',
+            'js/vendor/modernizr/*modernizr.js',
+            "**/require.js",
+            "!js/modules/**/*.js"
+          ],
+          dest:  "<%= dirs.staging %>/step3/"
+        },
+
+        'dist-final': {
+          expand: true,
+          cwd: '<%= dirs.staging %>/step3',
+          src: ["**"],
+          dest:  "<%= dirs.dist %>/public/"
+        }
       },
 
-      src: {
+      /**
+       * RequireJS Main Configuration
+       */
+      requirejs: {
+
         options: {
-          jshintrc: '.jshintrc'
+
+          baseUrl: "<%= dirs.staging %>/step1/js",
+
+          almond: true,
+
+          optimize: "uglify2",
+
+          useStrict: true,
+
+          logLevel: 2,
+
+          name: "vendor/almond/almond",
+
+          include: ['modules/TwitterSearchApp'],
+
+          mainConfigFile: "<%= dirs.staging %>/step1/js/main.js",
+
+          wrap: true
         },
-        src: ['src/js/modules/**/*.js', 'src/js/mail.js']
+
+        dev: {
+          options: {
+            optimize: "none",
+            out: "<%= dirs.staging %>/step1/js/amd-app.js"
+          }
+        },
+
+        prod: {
+          options: {
+            out: "<%= dirs.staging %>/step1/js/amd-app.js"
+          }
+        }
       },
 
-      test: {
+      /**
+       * Compass configuration
+       * @property compass
+       */
+      compass: {
         options: {
-          jshintrc: '.jshintrc'
+          sassDir: '<%= dirs.sass %>',
+          raw:  'images_dir = "src/app/img"\n' +
+                'http_images_path = "../img"\n' +
+                'http_javascripts_path = "../js"\n' +
+                'http_stylesheets_path = "."\n'
         },
-        src: ['test/**/*.js']
+        dev: {
+          options: {
+            cssDir: '<%= dirs.root %>/css',
+            environment: 'development'
+          }
+        },
+        dist: {
+          options: {
+            cssDir: '<%= dirs.staging %>/step1/css',
+            environment: 'production',
+            force: true
+          }
+        }
+      },
+
+      /**
+       * File Revision Confiugration
+       * @property
+       */
+      rev: {
+        files: {
+          expand: true,
+          cwd: '<%= dirs.staging %>/step2',
+          src: [  'js/custom/**/*.js',
+                  'js/*.js',
+                  '!js/vendor/*.js',
+                  'js/vendor/modernizr/modernizr.js',
+                  'css/**/*.css',
+                  'img/**/*.{png,jpg}',
+                  'css/imgages/**/*.{png,jpg}']
+        }
+      },
+
+      /**
+       * JSHint Configuration
+       * @property
+       */
+      jshint: {
+        options: {
+          jshintrc: './.jshintrc'
+        },
+        gruntfile: ['Gruntfile.js'],
+        js: ['<%= dirs.root %>js/modules/**/*.js'],
+        'test-unit': ['<%= dirs.test %>/unit/**/*.js'],
+        dev: {
+          src: [ '<%= jshint.gruntfile %>',
+                 '<%= jshint.js %>' ,
+                 "<%= jshint['test-unit'] %>" ]
+        },
+        build: {
+          src: [ '<%= jshint.gruntfile %>',
+                 '<%= jshint.js %>' ]
+        }
+      },
+
+      manifest:{
+        dest: '<%= dirs.staging %>/step3/manifest.appcache',
+        port: 3002
+      },
+
+      htmlmin: {
+        dist: {
+          options: {
+            removeComments: true,
+            collapseWhitespace: true
+          },
+          expand: true,
+          cwd: '<%= dirs.staging %>/step2',
+          src: '**/*.html',
+          dest: '<%= dirs.staging %>/step3/'
+        }
+      },
+
+      // regarde configuration
+
+      regarde: {
+        html: {
+          files: ['<%= dirs.root %>/*.html'],
+          tasks: ['livereload'],
+          spawn: false
+        },
+        js: {
+          files: ['<%= dirs.root %>/js/**/*.js'],
+          tasks: ['jshint:dev', 'jasmine', 'livereload', 'wait:100'],
+          spawn: false
+        },
+        compass: {
+          files: [ '<%= dirs.sass %>/*.sass', '<%= dirs.sass %>/*.scss' ],
+          tasks: [ 'compass:dev', 'livereload'],
+          spawn: false
+        },
+        'test-unit': {
+          files: ['<%= dirs.test %>/unit/**/*.js'],
+          tasks: ['jshint:dev', 'wait:100'],
+          spawn: false
+        },
+        gruntfile: {
+          files: ['Gruntfile.js'],
+          tasks: ['wait:100', 'jshint:dev'],
+          spawn: false
+        }
       }
-    },
-
-    watch: {
-
-      gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
-      },
-
-      src: {
-        files: '<%= jshint.src.src %>',
-        tasks: ['jshint:src', 'qunit']
-      },
-
-      test: {
-        files: '<%= jshint.test.src %>',
-        tasks: ['jshint:test', 'qunit']
-      }
-    }
-  });
+    });
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-regarde');
   grunt.loadNpmTasks('grunt-usemin');
+  grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-rev');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
+  grunt.loadNpmTasks('grunt-contrib-livereload');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-manifest');
 
 
   // Default task.
-  grunt.registerTask('default', [
-    'jshint',
-    //'qunit',
+  grunt.registerTask('production', [
+    'jshint:build',
     'clean',
-    //'concat',
-    'uglify']);
+    'copy:dist-step-1',
+    'compass:dist',
+    'useminPrepare',
+    "requirejs:prod",
+    'concat',
+    'cssmin',
+    'uglify',
+    'copy:dist-step-2',
+    'rev',
+    'usemin',
+    'copy:dist-step-3',
+    'htmlmin:dist',
+    'manifest',
+    'copy:dist-final'
+  ]);
+
+  // server task
+  grunt.renameTask('connect', 'server');
+
+  grunt.registerTask('dev', ['jshint:dev', 'compass:dev', 'livereload-start' , 'server:dev', 'regarde']);
+
+  grunt.registerTask('default', ['production']);
+
+  grunt.registerTask('dist', ['server:pro']);
 
 };

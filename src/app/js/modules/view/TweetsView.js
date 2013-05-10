@@ -18,6 +18,8 @@ function( _, Backbone, Marionette, TweetItemView) {
 
     var tweetsView = Backbone.Marionette.CollectionView.extend({
             id : "tweetsView",
+
+            className: "tweets-container",
             template: {
                 type: 'handlebars',
                 template: Handlebars.compile($('#node-template').html())

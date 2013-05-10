@@ -1,2 +1,5 @@
 target
+dist
+.sass-cache
+temp
 node_modules

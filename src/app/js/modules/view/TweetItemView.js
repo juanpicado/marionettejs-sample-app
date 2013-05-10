@@ -8,7 +8,7 @@ define([
 ], function( _, Backbone, Marionette, MarionetteHandlebars) {
 
     var MyItemView = Backbone.Marionette.ItemView.extend({
-        className: "twitter-item",
+        className: "twitter-item row",
         triggers: {
             "click .item-parent": "image:selected"
         },

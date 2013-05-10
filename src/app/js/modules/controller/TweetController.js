@@ -50,7 +50,7 @@ define([
             TwitterSearchApp.tweets.show(StoreCollectionView);
             TwitterSearchApp.search.show(tweetsSearch);
             tweetsSearch.on("twitter:search", function(data) {
-                collection.url = 'http://search.twitter.com/search.json?q=' + data + '&callback=?';
+                collection.url = 'http://identi.ca/api/search.json?q=' + data + '&callback=?';
                 collection.query = data;
                 collection.fetch({
                      success: function(response, xhr) {

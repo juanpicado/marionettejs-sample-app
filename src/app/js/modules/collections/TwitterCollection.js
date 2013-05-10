@@ -17,7 +17,7 @@ define([
             return response.results;
         },
         url: function () {
-            return 'http://search.twitter.com/search.json?q=' + this.query + '&page=' + this.page + '&callback=?'
+            return 'http://identi.ca/api/search.json?q=' + this.query + '&page=' + this.page + '&callback=?'
         },
         query: 'backbone.js',
 
