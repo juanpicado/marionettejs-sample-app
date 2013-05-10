@@ -55,5 +55,5 @@ This build minimize the code (html, js, css), optimize images and prepare the ap
 
 Once the process ended **load in your browser** this link
 
-[http://localhost:3001/](http://localhost:3002/)
+[http://localhost:3002/](http://localhost:3002/)
 
