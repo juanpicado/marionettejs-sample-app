@@ -9,7 +9,7 @@ Marionette.js / RequireJS / Bootstrap/ Handlebars sample application with Grunt.
 An example Tweet search app based on:
 
 * RequireJS
-* Backbone.js 
+* Backbone.js
 * Marionette.js
 * Handlebars
 * jQuery
@@ -41,7 +41,7 @@ Install **bower** dependencies
 This mode run [internal server](http://expressjs.com/) with livereload, compass, jhint in your browser ready to ready to be debugged.
 
 	grunt dev
-	
+
 Once the process ended **load in your browser** this link
 
 [http://localhost:3001/](http://localhost:3001/)
@@ -50,7 +50,7 @@ Once the process ended **load in your browser** this link
 
 This build minimize the code (html, js, css), optimize images and prepare the application ready to production.
 
-	grunt 
+	grunt
 	grunt dist
 
 Once the process ended **load in your browser** this link
