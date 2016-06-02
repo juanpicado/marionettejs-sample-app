@@ -38,7 +38,7 @@ Install **bower** dependencies
 
 ### Development
 
-This mode run [internal server](http://expressjs.com/) with livereload, compass, jhint in your browser ready to ready to be debugged.
+This mode runs [internal server](http://expressjs.com/) with livereload, compass, jhint in your browser ready to be debugged.
 
 	grunt dev
 
